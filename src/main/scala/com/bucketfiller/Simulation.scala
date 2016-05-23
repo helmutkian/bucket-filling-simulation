@@ -46,7 +46,8 @@ class Simulation(player: ActorRef) extends Actor {
                 val future = graphManager ? GraphManager.FindPath(initState, endState)
                 val GraphManager.Path(path) = Await.result(future, 30.seconds).asInstanceOf[GraphManager.Path]
                 player ! Result(path)
-            case _ => levelManager ! LevelManager.Next(source, states)
+            case _ =>
+              levelManager ! LevelManager.Next(source, states)
         }
         
         return ()

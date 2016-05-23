@@ -1,45 +1,48 @@
 package com.bucketfiller
+ 
+ import org.mashupbots.socko.routes._
+  import org.mashupbots.socko.infrastructure.Logger
+  import org.mashupbots.socko.webserver.WebServer
+  import org.mashupbots.socko.webserver.WebServerConfig
 
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Flow
-import akka.actor._
-import scala.io.StdIn
-import akka.http.scaladsl.model.ws.{Message, TextMessage, UpgradeToWebSocket}
+  import akka.actor.ActorSystem
+  import akka.actor.Props
+  import org.mashupbots.socko.events.HttpResponseStatus
+  import org.mashupbots.socko.events.WebSocketFrameEvent
 
-object Server extends App {
+  object SimulationServer extends Logger {
+    val system = ActorSystem("ServerSystem") 
 
-  implicit val system = ActorSystem("SYSTEM")
-  implicit val flowMaterializer = ActorMaterializer()
+    val routes = Routes({  
+      // HTTP
+    case HttpRequest(httpRequest) => httpRequest match {
+        case Path("/favicon.ico") => httpRequest.response.write(HttpResponseStatus.NOT_FOUND)
+      }
+      
+    // WebSocket connection
+      case WebSocketHandshake(wsHandshake) => wsHandshake match {
+        case Path("/ws/") => {
+          val wsId = wsHandshake.webSocketId
+            wsHandshake.authorize()
+        }
+      }
+       
+        // WebSocket Incoming
+        case WebSocketFrame(wsFrame) => handleWebSocket(wsFrame)
+    })
+    
+   val webServer = new WebServer(WebServerConfig(), routes, system)
 
-  val interface = "localhost"
-  val port = 8080
-  
-  val echoService: Flow[Message, Message, _] = Flow[Message].map {
-    case TextMessage.Strict(txt) => TextMessage("ECHO: " + txt)
-    case _ => TextMessage("Message type unsupported")
-}
-  
-  val route = get {
-    pathEndOrSingleSlash {
-      complete("Hello world")
+    def handleWebSocket(event: WebSocketFrameEvent) {
+      val webSocketHandler = system.actorOf(Props(new WebSocketHandler(webServer)))
+      webSocketHandler ! event
     }
-  } ~
-  path("ws-echo") {
-    get {
-      handleWebSocketMessages(echoService)
+      
+    def main(args: Array[String]) {
+      webServer.start()
+
+      Runtime.getRuntime.addShutdownHook(new Thread {
+        override def run { webServer.stop() }
+      })
     }
-}
-  
-  val binding = Http().bindAndHandle(route, interface, port)
-  println(s"Server is now online at http://$interface:$port\nPress RETURN to stop...")
-  StdIn.readLine()
-
-  import system.dispatcher
-
-  binding.flatMap(_.unbind()).onComplete(_ => system.shutdown())
-  println("Server is down...")
-
-}
+  }
