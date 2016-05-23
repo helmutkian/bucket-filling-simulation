@@ -141,7 +141,11 @@ class BucketFillerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
             )
           
           bucketFiller ! Start(capacityA, capacityB, goal)
-          player.expectMsg(Result(path))
+          player.ignoreMsg({
+            case LevelManager.Next(_, _) => true
+            case BeginLevel(_) => true
+          })
+         player.expectMsg(Result(path))
       }
   }
 }

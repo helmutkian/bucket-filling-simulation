@@ -20,6 +20,7 @@ class Simulation(player: ActorRef) extends Actor {
     def receive = {
         case Start(capacityA, capacityB, goal) => start(capacityA, capacityB, goal)
         case Frontier(source, states) => process(source, states)
+        case BeginLevel(level) => player ! BeginLevel(level)
     }
     
     def start(capacityA: Int, capacityB: Int, goal: Int) = {
@@ -46,11 +47,18 @@ class Simulation(player: ActorRef) extends Actor {
                 val future = graphManager ? GraphManager.FindPath(initState, endState)
                 val GraphManager.Path(path) = Await.result(future, 30.seconds).asInstanceOf[GraphManager.Path]
                 player ! Result(path)
+                die()
             case _ =>
-              levelManager ! LevelManager.Next(source, states)
+              val msg = LevelManager.Next(source, states)
+              player ! msg
+              levelManager ! msg
         }
         
         return ()
+    }
+    
+    def die() {
+      context.stop(self)      
     }
 }
 
@@ -60,4 +68,5 @@ object Simulation {
     case class Frontier(source: State, states: Set[State])
     case class Start(capacityA: Int, capacityB: Int, goal: Int)
     case class Result(path: List[State])
+    case class BeginLevel(level: Set[State])
 }
