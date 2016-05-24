@@ -1,0 +1,18 @@
+{
+  "name": "bucket-filler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "d3": "^3.5.17",
+    "express": "^4.13.4",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0"
+  }
+}
