@@ -47,7 +47,7 @@ function createTree(domNode) {
 		.append('g')
 		.attr('class', 'node')
 		.attr('transform', d => 'translate(' + source.y0 + ',' + source.x0 + ')');
-
+	
 	nodeEnter.append('circle')
 	    .attr('r', 8)
 	    .style('fill', 'lightsteelblue');
@@ -84,10 +84,19 @@ function createTree(domNode) {
 	    d.x0 = d.x;
 	    d.y0 = d.y;
 	});
+
+	var maxWidth = Math.max(width, d3.max(nodes, d => d.depth) * 60);
+	
+	d3.select('svg')
+	    .attr('width', maxWidth + margin.left + margin.right);
+
+	tree.size([height, maxWidth]);
     }
 
     function clear() {
 	d3.selectAll('.node, .link').remove();
+	d3.select('svg').attr('width', width + margin.left + margin.right);
+	tree.size([height, width]);
 	root = null;
     }
 

@@ -88,7 +88,7 @@ var Tree = React.createClass({
 	}
     },
     render: function () {
-	return (<div className="tree"></div>);
+	return (<div className="tree" style={ { overflow: 'auto' } }></div>);
     }
 });
 
