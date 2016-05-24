@@ -121,10 +121,10 @@ class BucketFillerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
       }
   }
   
-  "A BucketFiller actor" must {
+  "A Simulation actor" must {
       "Find the optimal path if it exists" in {
           val player = TestProbe()
-          val bucketFiller = system.actorOf(Props(new Simulation(player.ref)))
+          val simulation = system.actorOf(Props(new Simulation(player.ref)))
           
           val capacityA = 3
           val capacityB = 5
@@ -140,7 +140,25 @@ class BucketFillerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
               State(Bucket(3,3),Bucket(4,5))
             )
           
-          bucketFiller ! Start(capacityA, capacityB, goal)
+          simulation ! Start(capacityA, capacityB, goal)
+          player.ignoreMsg({
+            case LevelManager.Next(_, _) => true
+            case BeginLevel(_) => true
+          })
+         player.expectMsg(Result(path))
+      }
+      
+      "Return an empty path if none exists" in {
+          val player = TestProbe()
+          val simulation = system.actorOf(Props(new Simulation(player.ref)))
+          
+          val capacityA = 10
+          val capacityB = 14
+          val goal = 7
+          
+          val path = List[State]()
+          
+          simulation ! Start(capacityA, capacityB, goal)
           player.ignoreMsg({
             case LevelManager.Next(_, _) => true
             case BeginLevel(_) => true

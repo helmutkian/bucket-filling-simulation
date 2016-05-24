@@ -16,10 +16,14 @@ class LevelManager(moveMaker: ActorRef) extends Actor {
     }
     
     def moveToLevel(states: Set[State]) = {
-      context.parent ! BeginLevel(states)
+      if (states.isEmpty) {
+        context.parent ! Exhausted
+      } else {
+        context.parent ! BeginLevel(states)
         nextLevel = Set()
         currentLevel = states
         currentLevel.foreach(state => makeMove(state))
+      }
     }
     
     def addNext(prevState: State, nextStates: Set[State]) = {

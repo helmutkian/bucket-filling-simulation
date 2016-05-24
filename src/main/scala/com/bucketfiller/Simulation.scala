@@ -21,6 +21,9 @@ class Simulation(player: ActorRef) extends Actor {
         case Start(capacityA, capacityB, goal) => start(capacityA, capacityB, goal)
         case Frontier(source, states) => process(source, states)
         case BeginLevel(level) => player ! BeginLevel(level)
+        case Exhausted => 
+          player ! Result(List[State]())
+          die()
     }
     
     def start(capacityA: Int, capacityB: Int, goal: Int) = {
@@ -37,9 +40,7 @@ class Simulation(player: ActorRef) extends Actor {
         if (!isStarted) {
             return ()
         }
-        
-
-        
+       
         states.find({
             case State(Bucket(valueA, _), Bucket(valueB, _)) => 
                 valueA == endValue || valueB == endValue
@@ -72,4 +73,5 @@ object Simulation {
     case class Start(capacityA: Int, capacityB: Int, goal: Int)
     case class Result(path: List[State])
     case class BeginLevel(level: Set[State])
+    case object Exhausted
 }

@@ -60,6 +60,11 @@ class WebSocketHandler(webServer: WebServer) extends Actor {
   }
   
   def toString(path: Seq[Simulation.State]): String = {
+    
+    if (path.isEmpty) {
+      return "[]"
+    }
+    
     val states =  path.map({ case Simulation.State(Simulation.Bucket(a, _), Simulation.Bucket(b, _)) => s"[$a, $b]"  })
             .reduce((acc, str) => acc + "," + str)
             
