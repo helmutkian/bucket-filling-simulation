@@ -38,6 +38,8 @@ class Simulation(player: ActorRef) extends Actor {
             return ()
         }
         
+
+        
         states.find({
             case State(Bucket(valueA, _), Bucket(valueB, _)) => 
                 valueA == endValue || valueB == endValue
@@ -46,11 +48,12 @@ class Simulation(player: ActorRef) extends Actor {
                 implicit val timeout = Timeout(30.seconds)
                 val future = graphManager ? GraphManager.FindPath(initState, endState)
                 val GraphManager.Path(path) = Await.result(future, 30.seconds).asInstanceOf[GraphManager.Path]
+                player ! LevelManager.Next(source, states)
                 player ! Result(path)
                 die()
             case _ =>
-              val msg = LevelManager.Next(source, states)
-              player ! msg
+             val msg = LevelManager.Next(source, states)
+             player ! msg
               levelManager ! msg
         }
         

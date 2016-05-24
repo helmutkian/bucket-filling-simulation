@@ -55,7 +55,7 @@ class WebSocketHandler(webServer: WebServer) extends Actor {
   }
   
   def sendMsg(topic: String, msg: String) = {
-    val payload = "{\"topic\":" + topic + ", \"data\": " + msg + "}"
+    val payload = "{\"topic\": \"" + topic + "\", \"data\": " + msg + "}"
         webServer.webSocketConnections.writeText(payload, connectionId)
   }
   

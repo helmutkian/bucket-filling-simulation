@@ -71,9 +71,9 @@ class BucketFillerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
 
         graphManager ! GraphManager.Visit(s1, r1)
         probe.expectMsgPF() {
-            case Frontier(s, r) => s == s1 && r == r1
-         
+            case Frontier(s, r) => s == s1 && r == r1      
         }   
+        
         graphManager ! GraphManager.Visit(s1, r1)
         probe.expectMsgPF() {
             case Frontier(s, r) => s == s1 && r.isEmpty
