@@ -1,9 +1,12 @@
+bundle.js
+node_modules/
+
 *.class
 *.log
 *.jar
 
 # sbt specific
-.cache
+.cache*
 .history
 .lib/
 dist/*
@@ -20,3 +23,5 @@ project/plugins/project/
 # Emacs
 *~
 #\*
+
+
