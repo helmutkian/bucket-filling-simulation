@@ -16,6 +16,7 @@ class WebSocketHandler(webServer: WebServer) extends Actor {
     case LevelManager.Next(state, childStates) => handleNext(state, childStates)
     case Simulation.Result(path) => handleResult(path)
     case Simulation.BeginLevel(level) => handleLevel(level)
+    case Simulation.InvalidStart(reason) => handleInvalid(reason)
   }
   
   def handleEvent(event: WebSocketFrameEvent) = {
@@ -52,6 +53,10 @@ class WebSocketHandler(webServer: WebServer) extends Actor {
   
   def handleLevel(level: Set[Simulation.State]) = {
     sendMsg("level", toString(level.toList))
+  }
+  
+  def handleInvalid(reason: String) = {
+    sendMsg("invalid", reason)
   }
   
   def sendMsg(topic: String, msg: String) = {
