@@ -11,7 +11,8 @@ This project requires running two separate servers. A NodeJs HTTP server to deli
 * Install JavaScript depedencies:
 ````
 cd js/
-npm install -g browserify reactify
+npm install browserify
+npm install reactify
 npm install
 ````
 * Build web client:
