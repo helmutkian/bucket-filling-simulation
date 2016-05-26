@@ -59,10 +59,9 @@ function createTree(domNode) {
 	    .attr('text-anchor', 'center')
 	    .text(d => d.name);
 
-	var nodeUpdate = node
-		.transition().duration(duration)
-		.attr('transform', d => 'translate(' + d.y + ', ' + d.x + ')');
-
+	node.transition().duration(duration)
+	    .attr('transform', d => 'translate(' + d.y + ', ' + d.x + ')');
+		  
 	var link = svg.selectAll('path.link')
 		.data(links, d => d.target.id);
 
@@ -79,6 +78,7 @@ function createTree(domNode) {
 	link
 	    .transition().duration(duration)
 	    .attr('d', diagonal);
+    
 
 	nodes.forEach(function(d) {
 	    d.x0 = d.x;

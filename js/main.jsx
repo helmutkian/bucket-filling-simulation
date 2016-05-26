@@ -136,16 +136,16 @@ var App = React.createClass({
 	    simulation.start(settings);
 	});
 	
-	dispatcher.on('level', this.handleLevel);
+	dispatcher.on('level', debounce(this.handleLevel));
 	
-	dispatcher.on('next', this.handleNext);
+	dispatcher.on('next', debounce(this.handleNext));
 	
-	dispatcher.on('result', states => {
+	dispatcher.on('result', debounce(states => {
 	    console.log(states);
 	    this.setState({
 		solution: states.map(getName)
 	    });
-	});
+	}));
     },
     render: function () {
 	var solution = this.state.solution;
@@ -165,3 +165,10 @@ ReactDOM.render(<App />, document.getElementById('content'));
 function getName(state) {
     return state[0] + ', ' + state[1];
 }
+
+function debounce(fn) {
+    return function () {
+	setTimeout(() => fn.apply(null, arguments), 200);
+    };
+}
+
