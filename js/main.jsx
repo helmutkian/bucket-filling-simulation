@@ -150,9 +150,11 @@ var App = React.createClass({
     render: function () {
 	var solution = this.state.solution;
 	return (<div className="container">
+		<div className="panel panel-default">
+		<div className="panel-body">
 		<Controls />
-		<div class="row">
-		<div class="col-md-12">
+		</div>
+		<div className="panel-footer">
 		<Tree root={ this.state.tree } level={ this.state.level } solution={ solution }/>
 		</div>
 		</div>
