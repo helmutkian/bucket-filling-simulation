@@ -26,13 +26,12 @@ class Simulation(player: ActorRef) extends Actor {
           die()
     }
     
-    def start(capacityA: Int, capacityB: Int, goal: Int) = {
-         if (!isStarted) {
-           
-           if (capacityA < 0 || capacityB < 0 || goal < 0) {
+    def start(capacityA: Int, capacityB: Int, goal: Int): Unit = {
+        if (isStarted) {
+          return ()
+        } else if (capacityA < 0 || capacityB < 0 || goal < 0) {
             player ! InvalidStart("Values cannot be < 0")
-           }
-           
+         } else {          
             initState = State(Bucket(0, capacityA), Bucket(0, capacityB))
             isStarted = true
             endValue = goal
