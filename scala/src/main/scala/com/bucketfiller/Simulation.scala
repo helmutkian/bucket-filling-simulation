@@ -27,7 +27,12 @@ class Simulation(player: ActorRef) extends Actor {
     }
     
     def start(capacityA: Int, capacityB: Int, goal: Int) = {
-        if (!isStarted) {
+         if (!isStarted) {
+           
+           if (capacityA < 0 || capacityB < 0 || goal < 0) {
+            player ! InvalidStart("Values cannot be < 0")
+           }
+           
             initState = State(Bucket(0, capacityA), Bucket(0, capacityB))
             isStarted = true
             endValue = goal
@@ -73,5 +78,6 @@ object Simulation {
     case class Start(capacityA: Int, capacityB: Int, goal: Int)
     case class Result(path: List[State])
     case class BeginLevel(level: Set[State])
+    case class InvalidStart(reason: String)
     case object Exhausted
 }

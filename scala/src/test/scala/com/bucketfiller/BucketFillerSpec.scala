@@ -165,6 +165,18 @@ class BucketFillerSpec(_system: ActorSystem) extends TestKit(_system) with Impli
           })
          player.expectMsg(Result(path))
       }
+      
+      "Indicate if a start state is invalid" in {
+        val player = TestProbe()
+        val simulation = system.actorOf(Props(new Simulation(player.ref)))
+        
+        val capacityA = -3
+        val capacityB = 5
+        val goal = 4
+        
+        simulation ! Start(capacityA, capacityB, goal)
+        player.expectMsg(InvalidStart("Values cannot be < 0"))
+      }
   }
 }
 
