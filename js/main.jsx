@@ -69,11 +69,11 @@ var Tree = React.createClass({
     componentDidMount: function () {
 	this.tree = tree(ReactDOM.findDOMNode(this));
     },
-    componentDidUpdate: function (prevProps) {
-	var level = prevProps.level;
-	var root = prevProps.root;
+    shouldComponentUpdate: function (nextProps) {
+	var level = this.props.level;
+	var root = this.props.root;
 
-	if (root !== this.props.root) {
+	if (root !== nextProps.root) {
 	    this.tree.clear();
 	}
 	
@@ -83,9 +83,11 @@ var Tree = React.createClass({
 		.forEach(parent => this.tree.update(parent));
 	}
 
-	if (this.props.solution) {
-	    this.tree.solve(this.props.solution);
+	if (nextProps.solution) {
+	    this.tree.solve(nextProps.solution);
 	}
+
+	return false;
     },
     render: function () {
 	return (<div className="tree" style={ { overflow: 'auto' } }></div>);
