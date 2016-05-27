@@ -60,8 +60,13 @@ class WebSocketHandler(webServer: WebServer) extends Actor {
   }
   
   def sendMsg(topic: String, msg: String) = {
+    // TODO: Figure out how to listen for WebSocket close event
+    if (!webServer.webSocketConnections.isConnected(connectionId)) {
+      context.stop(self)
+    }
+    
     val payload = "{\"topic\": \"" + topic + "\", \"data\": " + msg + "}"
-        webServer.webSocketConnections.writeText(payload, connectionId)
+    webServer.webSocketConnections.writeText(payload, connectionId)
   }
   
   def toString(path: Seq[Simulation.State]): String = {

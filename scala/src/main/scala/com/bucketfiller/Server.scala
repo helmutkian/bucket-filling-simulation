@@ -9,24 +9,25 @@ package com.bucketfiller
   import akka.actor.Props
   import org.mashupbots.socko.events.HttpResponseStatus
   import org.mashupbots.socko.events.WebSocketFrameEvent
+  
+  import scala.collection._
 
   object SimulationServer extends Logger {
-    val system = ActorSystem("ServerSystem") 
+    val system = ActorSystem("ServerSystem")
 
     val routes = Routes({  
       // HTTP
     case HttpRequest(httpRequest) => httpRequest match {
         case Path("/favicon.ico") => httpRequest.response.write(HttpResponseStatus.NOT_FOUND)
-      }
+    }
       
     // WebSocket connection
       case WebSocketHandshake(wsHandshake) => wsHandshake match {
         case Path("/ws/") => {
           val wsId = wsHandshake.webSocketId
             wsHandshake.authorize()
-        }
-      }
-       
+            }
+        }       
         // WebSocket Incoming
         case WebSocketFrame(wsFrame) => handleWebSocket(wsFrame)
     })
@@ -35,9 +36,11 @@ package com.bucketfiller
 
     def handleWebSocket(event: WebSocketFrameEvent) {
       val webSocketHandler = system.actorOf(Props(new WebSocketHandler(webServer)))
+
       webSocketHandler ! event
     }
-      
+    
+    
     def main(args: Array[String]) {
       webServer.start()
 
